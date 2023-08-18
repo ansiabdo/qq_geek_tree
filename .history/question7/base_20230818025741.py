@@ -12,23 +12,12 @@ def get_chal(s):
 
 
 def get_chal_vars(s):
-    s1 = '__TENCENT_CHAOS_VM.v=0;var A=L(["'
+    s1 = '__TENCENT_CHAOS_VM.v=5;var g=I(["'
     s2 = '",['
-    # print('============================= \n')
-    # print(s.find(s1))
-    # print(len(s1))
     s = s[s.find(s1) + len(s1):]
-    # print('============s================= \n')
-    # print(s)
     a = s[:s.find('"')]
-    # print('==============a=============== \n')
-    # print(a)
     s = s[s.find(s2) + len(s2):]
-    # print('==============s=============== \n')
-    # print(s)
     b = s[:s.find(']')].split(',')
-    # print('============================= \n')
-    # print(b)
     c = []
     for x in b:
         if x.isnumeric():
@@ -81,7 +70,6 @@ orig_opcodes = {
     14: 'SWAPN',
     15: 'PUSHTOP',
     16: 'PUSHARRTOP',
-    17: 'PUSHTOP',
     18: 'CALL1',
     21: 'FLIP',
     22: 'AND',
@@ -118,7 +106,6 @@ orig_opcodes = {
     55: 'MOD',
     56: 'SETLEN',
     58: 'CMPEQ3',
-    59: 'SETLEN',
     60: 'SUBST6',
     61: 'CMPG',
     62: 'ORARRAY',
@@ -200,9 +187,6 @@ def execute(code, opcodes, verbose=False, recomp_dict=None):
         if ptype != 0:
             stack = [None] * 100
         oldpc = pc
-        # print(pc)
-        # print(code[pc])
-        # print(opcodes)
         opstr = opcodes[code[pc]]
         opcode = orig_rev[opstr]
         if recomp_dict is not None:
@@ -213,12 +197,7 @@ def execute(code, opcodes, verbose=False, recomp_dict=None):
         altpc = None
         defpc = True
         s1 = stack[-1]
-        print('============s1================= \n')
-        print(s1)
-
         s2 = stack[-2]
-        print('============s2================= \n')
-        print(s2)
         if opcode == 0:
             pop(1)
             if s1 == 'array_tmp_1':
@@ -289,13 +268,6 @@ def execute(code, opcodes, verbose=False, recomp_dict=None):
             push(s1)
             uprint('push s1')
         elif opcode == 16:
-            pop(1)
-            if s1 is not None:
-                push([s1])
-            else:
-                ssetn(0)
-            uprint('pop 1: push [s1]')
-        elif opcode == 17:
             pop(1)
             if s1 is not None:
                 push([s1])
@@ -490,11 +462,6 @@ def execute(code, opcodes, verbose=False, recomp_dict=None):
             pop(1)
             sset(1, lambda s1, s2: s2 == s1)
             uprint('pop 1: cmpeq3 s2, s1')
-        elif opcode == 59:
-            stack = [None] * code[pc]
-            uprint('resize stack %d' % code[pc])
-            recompile_code[pc] = code[pc]
-            pc += 1
         elif opcode == 60:
             pop(1)
             uprint('pop 1: mov s2[0][s2[1]], s1[0][s1[1]]')
